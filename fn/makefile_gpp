@@ -1,0 +1,12 @@
+#Makefile
+#-fPIC can be ignored on Windows platform
+#--std=c++14
+PYTHON_PATH = $(USERPROFILE)\Anaconda3
+all: _find_nearest.pyd
+re: clean _find_nearest.pyd
+_find_nearest.pyd: find_nearest.h find_nearest.cpp find_nearest_wrap.cxx
+	g++ -fopenmp -shared -o _find_nearest.pyd -I $(PYTHON_PATH)\include -I $(PYTHON_PATH)\Lib\site-packages\numpy\core\include -L $(PYTHON_PATH) -l python3 -l python36 find_nearest.cpp find_nearest_wrap.cxx
+find_nearest_wrap.cxx: find_nearest.i find_nearest.h find_nearest.cpp
+	swig -c++ -python -py3 -v find_nearest.i
+clean:
+	del /f /s _find_nearest.pyd find_nearest_wrap.cxx find_nearest.py
